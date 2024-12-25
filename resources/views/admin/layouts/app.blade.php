@@ -234,70 +234,13 @@
 </head>
 <body>
     <div class="layout">
-        <!-- 侧边栏 -->
-        <div class="sidebar">
-            <div class="logo">
-                <h1>{{ config('app.name') }}</h1>
-            </div>
-            <div class="menu">
-                <a href="{{ route('admin.dashboard') }}" class="menu-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
-                    <i class="fas fa-tachometer-alt"></i>
-                    <span>仪表板</span>
-                </a>
-                <a href="{{ route('admin.users.index') }}" class="menu-item {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
-                    <i class="fas fa-users"></i>
-                    <span>用户管理</span>
-                </a>
-                <a href="{{ route('admin.settings.index') }}" class="menu-item {{ request()->routeIs('admin.settings.*') ? 'active' : '' }}">
-                    <i class="fas fa-cog"></i>
-                    <span>系统设置</span>
-                </a>
-                <a href="{{ route('admin.contents.index') }}" class="menu-item {{ request()->routeIs('admin.contents.*') ? 'active' : '' }}">
-                    <i class="fas fa-file-alt"></i>
-                    <span>内容管理</span>
-                </a>
-            </div>
-        </div>
+        <!-- 引入侧边栏 -->
+        @include('admin.partials.sidebar')
 
         <!-- 主要内容区域 -->
         <div class="main-content">
-            <!-- 顶部导航栏 -->
-            <div class="header">
-                <div class="header-left">
-                    <span class="trigger">
-                        <i class="fas fa-bars"></i>
-                    </span>
-                    <div class="breadcrumb">
-                        @yield('breadcrumb')
-                    </div>
-                </div>
-                <div class="header-right">
-                    <div class="user-dropdown">
-                        <div class="user-info">
-                            <span>{{ auth()->user()->name }}</span>
-                            <i class="fas fa-chevron-down"></i>
-                        </div>
-                        <div class="dropdown-menu">
-                            <a href="#" class="dropdown-item">
-                                <i class="fas fa-user"></i>
-                                <span>个人信息</span>
-                            </a>
-                            <a href="{{ route('admin.password.show') }}" class="dropdown-item">
-                                <i class="fas fa-key"></i>
-                                <span>修改密码</span>
-                            </a>
-                            <div class="dropdown-divider"></div>
-                            <form method="POST" action="{{ route('admin.logout') }}" style="display: contents;">
-                                @csrf
-                                <button type="submit" class="dropdown-item" style="width: 100%; border: none; background: none; cursor: pointer;">
-                                    <i class="fas fa-sign-out-alt"></i>
-                                    <span>退出登录</span>
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <!-- 引入顶部导航栏 -->
+            @include('admin.partials.header')
 
             <!-- 页面内容 -->
             <div class="page-content">
