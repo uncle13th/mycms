@@ -3,11 +3,14 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
+    use AuthenticatesUsers;
+
     /**
      * Where to redirect users after login.
      *
@@ -26,39 +29,13 @@ class AuthController extends Controller
     }
 
     /**
-     * 显示登录页面
+     * Show the application's login form.
+     *
+     * @return \Illuminate\View\View
      */
     public function showLoginForm()
     {
         return view('admin.auth.login');
-    }
-
-    /**
-     * 处理登录请求
-     */
-    public function login(Request $request)
-    {
-        $credentials = $request->validate([
-            'username' => ['required', 'string'],
-            'password' => ['required', 'string'],
-        ]);
-
-        if (Auth::guard('admin')->attempt($credentials)) {
-            $request->session()->regenerate();
-
-            return response()->json([
-                'code' => 0,
-                'msg' => '登录成功',
-                'data' => [
-                    'redirect' => route('admin.dashboard')
-                ]
-            ]);
-        }
-
-        return response()->json([
-            'code' => 1,
-            'msg' => '用户名或密码错误',
-        ], 422);
     }
 
     /**
@@ -72,13 +49,16 @@ class AuthController extends Controller
     }
 
     /**
-     * 退出登录
+     * Log the user out of the application.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
      */
     public function logout(Request $request)
     {
-        Auth::guard('admin')->logout();
+        $this->guard()->logout();
+
         $request->session()->invalidate();
-        $request->session()->regenerateToken();
 
         return redirect()->route('admin.login');
     }
