@@ -17,12 +17,12 @@ class DashboardController extends Controller
     }
 
     /**
-     * Show the application dashboard.
+     * 显示仪表板
      *
      * @return \Illuminate\View\View
      */
     public function index()
     {
-        return view('admin.dashboard');
+        return view('admin.dashboard.index');
     }
 }
