@@ -58,7 +58,15 @@ class ProductController extends Controller
             $validated['image_url'] = asset('storage/' . $path);
         }
 
-        Product::create($validated);
+        $data = [
+            'name' => $request->name,
+            'category_id' => $request->category_id,
+            'description' => $request->description,
+            'status' => $request->boolean('status'),
+            'language' => $request->language,
+        ];
+
+        Product::create($data);
 
         return redirect()
             ->route('admin.products.index')
@@ -87,11 +95,19 @@ class ProductController extends Controller
             $validated['image_url'] = asset('storage/' . $path);
         }
 
-        $product->update($validated);
+        $data = [
+            'name' => $request->name,
+            'category_id' => $request->category_id,
+            'description' => $request->description,
+            'status' => $request->boolean('status'),
+            'language' => $request->language,
+        ];
+
+        $product->update($data);
 
         return redirect()
             ->route('admin.products.index')
-            ->with('success', '产品更��成功');
+            ->with('success', '产品更新成功');
     }
 
     public function destroy(Product $product)
