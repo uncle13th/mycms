@@ -35,6 +35,15 @@
                         </div>
 
                         <div class="form-group">
+                            <label>产品描述</label>
+                            <input type="text" 
+                                   name="description" 
+                                   class="form-control" 
+                                   value="{{ old('description', $product->description ?? '') }}" 
+                                   placeholder="请输入产品简短描述">
+                        </div>
+
+                        <div class="form-group">
                             <label>所属分类</label>
                             <select name="category_id" class="form-control" required>
                                 <option value="">请选择分类</option>
@@ -110,11 +119,11 @@
 
             <!-- 产品描述区域 -->
             <div class="form-section">
-                <h3 class="section-title">产品描述</h3>
+                <h3 class="section-title">产品内容</h3>
                 <div class="form-group">
-                    <textarea name="description" 
+                    <textarea name="content" 
                               class="form-control" 
-                              rows="6">{{ old('description', $product->description ?? '') }}</textarea>
+                              rows="8">{{ old('content', $product->content ?? '') }}</textarea>
                 </div>
             </div>
 

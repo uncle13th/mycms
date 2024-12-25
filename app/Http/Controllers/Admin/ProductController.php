@@ -49,27 +49,19 @@ class ProductController extends Controller
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|max:255',
-            'category_id' => 'required|integer',
-            'price' => 'required|numeric|min:0',
-            'description' => 'nullable|string',
-            'status' => 'boolean',
-            'image' => 'required|image|max:2048' // 2MB 限制
-        ]);
-
-        if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('products', 'public');
-            $validated['image_url'] = asset('storage/' . $path);
-        }
-
         $data = [
             'name' => $request->name,
             'category_id' => $request->category_id,
             'description' => $request->description,
+            'content' => $request->content,
             'status' => $request->boolean('status'),
             'language' => $request->language,
         ];
+
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('products', 'public');
+            $data['image_url'] = asset('storage/' . $path);
+        }
 
         Product::create($data);
 
@@ -86,27 +78,19 @@ class ProductController extends Controller
 
     public function update(Request $request, Product $product)
     {
-        $validated = $request->validate([
-            'name' => 'required|max:255',
-            'category_id' => 'required|integer',
-            'price' => 'required|numeric|min:0',
-            'description' => 'nullable|string',
-            'status' => 'boolean',
-            'image' => 'nullable|image|max:2048'
-        ]);
-
-        if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('products', 'public');
-            $validated['image_url'] = asset('storage/' . $path);
-        }
-
         $data = [
             'name' => $request->name,
             'category_id' => $request->category_id,
             'description' => $request->description,
+            'content' => $request->content,
             'status' => $request->boolean('status'),
             'language' => $request->language,
         ];
+
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('products', 'public');
+            $data['image_url'] = asset('storage/' . $path);
+        }
 
         $product->update($data);
 

@@ -9,11 +9,11 @@ class Product extends Model
     protected $fillable = [
         'name',
         'category_id',
-        'price',
-        'image_url',
         'description',
+        'content',
         'status',
-        'language'
+        'language',
+        'image_url'
     ];
 
     protected $casts = [
