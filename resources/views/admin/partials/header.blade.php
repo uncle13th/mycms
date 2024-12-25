@@ -7,7 +7,7 @@
     <div class="header-right">
         <div class="user-dropdown">
             <div class="user-info">
-                <span>管理员</span>
+                <span>{{ auth()->user()->username }}</span>
                 <i class="fas fa-chevron-down"></i>
             </div>
             <div class="dropdown-menu">
