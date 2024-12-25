@@ -3,108 +3,308 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ config('app.name') }} - 管理后台</title>
-    
-    <!-- Google Font: Source Sans Pro -->
-    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback" rel="stylesheet">
-    <!-- Font Awesome -->
+    <title>@yield('title') - {{ config('app.name') }}</title>
     <link href="https://cdn.bootcdn.net/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
-    <!-- Bootstrap -->
-    <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.3.1/css/bootstrap.min.css" rel="stylesheet">
-    
     <style>
-    /* 侧边栏样式 */
-    .sidebar {
-        min-height: 100vh;
-        background: #343a40;
-        color: #fff;
-    }
-    .sidebar .nav-link {
-        color: rgba(255,255,255,.8);
-    }
-    .sidebar .nav-link:hover {
-        color: #fff;
-    }
-    .sidebar .nav-link.active {
-        background: rgba(255,255,255,.1);
-    }
-    /* 内容区域样式 */
-    .main-content {
-        padding: 20px;
-    }
-    /* 导航栏样式 */
-    .navbar {
-        background: #fff;
-        box-shadow: 0 2px 4px rgba(0,0,0,.04);
-    }
+        /* 复制 dashboard.blade.php 中的基础样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
+            background: #f0f2f5;
+            color: #333;
+        }
+
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* 侧边栏样式 */
+        .sidebar {
+            width: 240px;
+            background: #001529;
+            color: #fff;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .logo {
+            height: 64px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logo h1 {
+            color: #fff;
+            font-size: 20px;
+            margin: 0;
+        }
+
+        .menu {
+            padding: 16px 0;
+        }
+
+        .menu-item {
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            color: #fff;
+        }
+
+        .menu-item:hover {
+            background: #1890ff;
+        }
+
+        .menu-item.active {
+            background: #1890ff;
+        }
+
+        .menu-item i {
+            margin-right: 10px;
+            width: 16px;
+            text-align: center;
+        }
+
+        /* 主要内容区域样式 */
+        .main-content {
+            flex: 1;
+            margin-left: 240px;
+            padding: 24px;
+        }
+
+        /* 顶部导航栏样式 */
+        .header {
+            background: #fff;
+            padding: 0 24px;
+            height: 64px;
+            position: fixed;
+            top: 0;
+            right: 0;
+            left: 240px;
+            z-index: 1000;
+            box-shadow: 0 1px 4px rgba(0,21,41,.08);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .trigger {
+            font-size: 18px;
+            cursor: pointer;
+            transition: color 0.3s;
+            padding: 0 24px;
+        }
+
+        .trigger:hover {
+            color: #1890ff;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+        }
+
+        /* 面包屑导航样式 */
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .breadcrumb i {
+            margin: 0 8px;
+            font-size: 12px;
+            color: #999;
+        }
+
+        /* 用户下拉菜单样式 */
+        .user-dropdown {
+            position: relative;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            padding: 0 8px;
+            height: 64px;
+        }
+
+        .user-info:hover {
+            background: rgba(0,0,0,.025);
+        }
+
+        .user-info i.fa-chevron-down {
+            margin-left: 8px;
+            font-size: 12px;
+            color: #999;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            border-radius: 4px;
+            padding: 4px 0;
+            min-width: 160px;
+            display: none;
+        }
+
+        .user-dropdown:hover .dropdown-menu {
+            display: block;
+        }
+
+        .dropdown-item {
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            color: #666;
+            text-decoration: none;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .dropdown-item:hover {
+            background: #f5f5f5;
+            color: #1890ff;
+        }
+
+        .dropdown-item i {
+            margin-right: 8px;
+            width: 16px;
+            text-align: center;
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: #f0f0f0;
+            margin: 4px 0;
+        }
+
+        /* 页面内容区域 */
+        .page-content {
+            margin-top: 88px;
+            background: #fff;
+            padding: 24px;
+            border-radius: 4px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+        }
+
+        /* Alert 样式 */
+        .alert {
+            padding: 10px 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .alert-success {
+            background-color: #f0f9eb;
+            color: #67c23a;
+            border: 1px solid #e1f3d8;
+        }
+
+        .alert-danger {
+            background-color: #fef0f0;
+            color: #f56c6c;
+            border: 1px solid #fde2e2;
+        }
     </style>
-    @stack('styles')
+    @yield('styles')
 </head>
 <body>
-    <div class="container-fluid">
-        <div class="row">
-            <!-- 侧边栏 -->
-            <nav class="col-md-2 d-none d-md-block sidebar">
-                <div class="position-sticky pt-3">
-                    <div class="text-center mb-4">
-                        <h5>{{ config('app.name') }}</h5>
-                    </div>
-                    <ul class="nav flex-column">
-                        <li class="nav-item">
-                            <a class="nav-link {{ request()->is('admin') || request()->is('admin/dashboard') ? 'active' : '' }}" href="{{ route('admin.dashboard') }}">
-                                <i class="fas fa-tachometer-alt fa-fw me-2"></i>
-                                仪表板
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link {{ request()->is('admin/menus*') ? 'active' : '' }}" href="{{ route('menus.index') }}">
-                                <i class="fas fa-bars fa-fw me-2"></i>
-                                菜单管理
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
+    <div class="layout">
+        <!-- 侧边栏 -->
+        <div class="sidebar">
+            <div class="logo">
+                <h1>{{ config('app.name') }}</h1>
+            </div>
+            <div class="menu">
+                <a href="{{ route('admin.dashboard') }}" class="menu-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>仪表板</span>
+                </a>
+                <a href="{{ route('admin.users.index') }}" class="menu-item {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
+                    <i class="fas fa-users"></i>
+                    <span>用户管理</span>
+                </a>
+                <a href="{{ route('admin.settings.index') }}" class="menu-item {{ request()->routeIs('admin.settings.*') ? 'active' : '' }}">
+                    <i class="fas fa-cog"></i>
+                    <span>系统设置</span>
+                </a>
+                <a href="{{ route('admin.contents.index') }}" class="menu-item {{ request()->routeIs('admin.contents.*') ? 'active' : '' }}">
+                    <i class="fas fa-file-alt"></i>
+                    <span>内容管理</span>
+                </a>
+            </div>
+        </div>
 
-            <!-- 主要内容区域 -->
-            <main class="col-md-10 ms-sm-auto px-md-4 main-content">
-                <!-- 顶部导航栏 -->
-                <nav class="navbar navbar-expand-lg navbar-light mb-4">
-                    <div class="container-fluid">
-                        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                            <span class="navbar-toggler-icon"></span>
-                        </button>
-                        <div class="collapse navbar-collapse" id="navbarNav">
-                            <ul class="navbar-nav ms-auto">
-                                <li class="nav-item dropdown">
-                                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
-                                        <i class="fas fa-user fa-fw"></i>
-                                        {{ Auth::guard('admin')->user()->name ?? '管理员' }}
-                                    </a>
-                                    <ul class="dropdown-menu dropdown-menu-end">
-                                        <li>
-                                            <form action="{{ route('admin.logout') }}" method="POST">
-                                                @csrf
-                                                <button type="submit" class="dropdown-item">
-                                                    <i class="fas fa-sign-out-alt fa-fw"></i> 退出登录
-                                                </button>
-                                            </form>
-                                        </li>
-                                    </ul>
-                                </li>
-                            </ul>
+        <!-- 主要内容区域 -->
+        <div class="main-content">
+            <!-- 顶部导航栏 -->
+            <div class="header">
+                <div class="header-left">
+                    <span class="trigger">
+                        <i class="fas fa-bars"></i>
+                    </span>
+                    <div class="breadcrumb">
+                        @yield('breadcrumb')
+                    </div>
+                </div>
+                <div class="header-right">
+                    <div class="user-dropdown">
+                        <div class="user-info">
+                            <span>{{ auth()->user()->name }}</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="dropdown-menu">
+                            <a href="#" class="dropdown-item">
+                                <i class="fas fa-user"></i>
+                                <span>个人信息</span>
+                            </a>
+                            <a href="{{ route('admin.password.show') }}" class="dropdown-item">
+                                <i class="fas fa-key"></i>
+                                <span>修改密码</span>
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <form method="POST" action="{{ route('admin.logout') }}" style="display: contents;">
+                                @csrf
+                                <button type="submit" class="dropdown-item" style="width: 100%; border: none; background: none; cursor: pointer;">
+                                    <i class="fas fa-sign-out-alt"></i>
+                                    <span>退出登录</span>
+                                </button>
+                            </form>
                         </div>
                     </div>
-                </nav>
+                </div>
+            </div>
 
-                <!-- 页面内容 -->
+            <!-- 页面内容 -->
+            <div class="page-content">
                 @yield('content')
-            </main>
+            </div>
         </div>
     </div>
-
-    <!-- Bootstrap Bundle with Popper -->
-    <script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.3.1/js/bootstrap.bundle.min.js"></script>
-    @stack('scripts')
+    @yield('scripts')
 </body>
 </html>

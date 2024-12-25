@@ -358,7 +358,7 @@
                                 <i class="fas fa-user"></i>
                                 <span>个人信息</span>
                             </a>
-                            <a href="#" class="dropdown-item">
+                            <a href="{{ route('admin.password.show') }}" class="dropdown-item">
                                 <i class="fas fa-key"></i>
                                 <span>修改密码</span>
                             </a>
