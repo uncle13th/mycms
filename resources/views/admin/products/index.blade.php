@@ -175,8 +175,8 @@
     margin-bottom: 20px;
     display: flex;
     justify-content: space-between;
-    align-items: flex-end;
-    gap: 20px;
+    align-items: center;
+    gap: 24px;
     position: sticky;
     top: 0;
     z-index: 10;
@@ -188,24 +188,55 @@
 
 .search-row {
     display: flex;
-    gap: 20px;
-    align-items: flex-end;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 24px;
 }
 
+/* 搜索组样式优化 */
 .search-group {
-    flex: 1;
-    min-width: 200px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    height: 36px;
 }
 
+/* 产品名称搜索组 */
+.search-group:first-child {
+    flex: 1;
+    min-width: 280px;
+}
+
+/* 下拉框搜索组 */
+.search-group:not(:first-child) {
+    width: 240px;
+}
+
+.search-group:not(:first-child) .form-control {
+    width: 140px;
+}
+
+/* 标签样式优化 */
 .search-group label {
-    display: block;
-    margin-bottom: 8px;
+    white-space: nowrap;
     color: #606266;
     font-size: 14px;
+    margin-bottom: 0;
+    min-width: 70px;
 }
 
+/* 搜索按钮组样式优化 */
+.search-buttons {
+    display: flex;
+    gap: 12px;
+    margin-left: 12px;
+    height: 36px;
+}
+
+/* 输入框样式优化 */
 .input-with-icon {
     position: relative;
+    flex: 1;
 }
 
 .input-with-icon i {
@@ -218,6 +249,67 @@
 
 .input-with-icon input {
     padding-left: 35px;
+    width: 100%;
+}
+
+/* 下拉框样式优化 */
+select.form-control {
+    appearance: none;
+    padding-right: 30px;
+    background: #fff url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23909399' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e") no-repeat right 8px center/12px 12px;
+    cursor: pointer;
+}
+
+/* 按钮基础样式 */
+.btn-primary, .btn-info, .btn-default {
+    height: 36px;
+    padding: 0 20px;
+    border-radius: 4px;
+    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-decoration: none;
+}
+
+/* 搜索按钮 */
+.btn-info {
+    background: linear-gradient(135deg, #409eff, #3a8ee6);
+    color: #fff;
+    border: none;
+}
+
+.btn-info:hover {
+    background: linear-gradient(135deg, #66b1ff, #409eff);
+    transform: translateY(-1px);
+}
+
+/* 重置按钮 */
+.btn-default {
+    background: #fff;
+    border: 1px solid #dcdfe6;
+    color: #606266;
+}
+
+.btn-default:hover {
+    color: #409eff;
+    border-color: #c6e2ff;
+    background: #ecf5ff;
+    transform: translateY(-1px);
+}
+
+/* 新增按钮 */
+.btn-primary {
+    background: linear-gradient(135deg, #67c23a, #5daf34);
+    color: #fff;
+    border: none;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #85ce61, #67c23a);
+    transform: translateY(-1px);
 }
 
 /* 表格容器样式 */
@@ -299,52 +391,6 @@
 .status-inactive {
     background: #fde2e2;
     color: #f56c6c;
-}
-
-/* 按钮样式 */
-.btn-primary, .btn-info, .btn-default {
-    height: 36px;
-    padding: 0 20px;
-    border-radius: 4px;
-    font-size: 14px;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    cursor: pointer;
-    transition: all 0.3s;
-    border: none;
-    text-decoration: none;
-}
-
-.btn-primary {
-    background: linear-gradient(135deg, #409eff, #3a8ee6);
-    color: #fff;
-}
-
-.btn-info {
-    background: #409eff;
-    color: #fff;
-}
-
-.btn-default {
-    background: #fff;
-    color: #606266;
-    border: 1px solid #dcdfe6;
-}
-
-.btn-primary:hover {
-    background: linear-gradient(135deg, #66b1ff, #409eff);
-    transform: translateY(-1px);
-}
-
-.btn-info:hover {
-    background: #66b1ff;
-}
-
-.btn-default:hover {
-    color: #409eff;
-    border-color: #c6e2ff;
-    background: #ecf5ff;
 }
 
 /* 操作按钮样式 */
