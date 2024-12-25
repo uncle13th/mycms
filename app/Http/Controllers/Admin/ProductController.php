@@ -26,6 +26,11 @@ class ProductController extends Controller
             $query->where('status', $request->status);
         }
 
+        // 添加语言筛选
+        if ($request->has('language')) {
+            $query->where('language', $request->language);
+        }
+
         // 排序
         $query->orderBy('id', 'desc');
 

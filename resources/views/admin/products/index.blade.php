@@ -37,6 +37,15 @@
                     </select>
                 </div>
                 <div class="search-group">
+                    <label>语言</label>
+                    <select name="language" class="form-control">
+                        <option value="">请选择语言</option>
+                        <option value="zh_CN" {{ request('language') === 'zh_CN' ? 'selected' : '' }}>简体中文</option>
+                        <option value="zh_TW" {{ request('language') === 'zh_TW' ? 'selected' : '' }}>繁体中文</option>
+                        <option value="en" {{ request('language') === 'en' ? 'selected' : '' }}>英语</option>
+                    </select>
+                </div>
+                <div class="search-group">
                     <label>产品状态</label>
                     <select name="status" class="form-control">
                         <option value="">请选择状态</option>
@@ -69,7 +78,7 @@
                     <th>产品图片</th>
                     <th>产品名称</th>
                     <th>分类</th>
-                    <th>价格</th>
+                    <th>语言</th>
                     <th>状态</th>
                     <th>创建时间</th>
                     <th>操作</th>
@@ -90,14 +99,30 @@
                             <div class="product-desc">{{ Str::limit($product->description, 50) }}</div>
                         @endif
                     </td>
-                    <td>{{ optional($product->category)->name }}</td>
-                    <td class="price">￥{{ number_format($product->price, 2) }}</td>
+                    <td>{{ $product->category->name }}</td>
                     <td>
-                        <span class="status-tag {{ $product->status ? 'status-active' : 'status-inactive' }}">
-                            {{ $product->status ? '上架' : '下架' }}
-                        </span>
+                        @switch($product->language)
+                            @case('zh_CN')
+                                <span class="badge badge-info">简体中文</span>
+                                @break
+                            @case('zh_TW')
+                                <span class="badge badge-info">繁体中文</span>
+                                @break
+                            @case('en')
+                                <span class="badge badge-info">英语</span>
+                                @break
+                            @default
+                                <span class="badge badge-secondary">未知</span>
+                        @endswitch
                     </td>
-                    <td>{{ $product->created_at->format('Y-m-d H:i') }}</td>
+                    <td>
+                        @if($product->status)
+                            <span class="badge badge-success">上架</span>
+                        @else
+                            <span class="badge badge-secondary">下架</span>
+                        @endif
+                    </td>
+                    <td>{{ $product->created_at }}</td>
                     <td>
                         <div class="action-buttons">
                             <a href="{{ route('admin.products.edit', $product->id) }}" 
