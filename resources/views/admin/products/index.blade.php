@@ -152,6 +152,9 @@
     justify-content: space-between;
     align-items: flex-end;
     gap: 20px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
 }
 
 .search-form {
@@ -197,7 +200,12 @@
     background: #fff;
     border-radius: 8px;
     box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.05);
-    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.table-responsive {
+    overflow: auto;
 }
 
 /* 表格样式 */
@@ -371,7 +379,10 @@
 
 /* 分页样式 */
 .pagination-wrapper {
-    margin-top: 20px;
+    margin-top: auto;
+    padding: 20px;
+    background: #fff;
+    border-top: 1px solid #ebeef5;
 }
 
 .pagination-content {
@@ -459,6 +470,24 @@ select.form-control {
     appearance: none;
     padding-right: 30px;
     background: #fff url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e") no-repeat right 0.75rem center/16px 12px;
+}
+
+/* 美化滚动条 */
+.content-container::-webkit-scrollbar,
+.table-responsive::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+.content-container::-webkit-scrollbar-thumb,
+.table-responsive::-webkit-scrollbar-thumb {
+    background: #dcdfe6;
+    border-radius: 3px;
+}
+
+.content-container::-webkit-scrollbar-track,
+.table-responsive::-webkit-scrollbar-track {
+    background: #f5f7fa;
 }
 </style>
 @endsection

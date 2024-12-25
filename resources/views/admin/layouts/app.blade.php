@@ -6,7 +6,6 @@
     <title>@yield('title') - {{ config('app.name') }}</title>
     <link href="https://cdn.bootcdn.net/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <style>
-        /* 复制 dashboard.blade.php 中的基础样式 */
         * {
             margin: 0;
             padding: 0;
@@ -17,11 +16,14 @@
             font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
             background: #f0f2f5;
             color: #333;
+            height: 100vh;
+            overflow: hidden;
         }
 
-        .layout {
+        /* 整体布局 */
+        .app-container {
             display: flex;
-            min-height: 100vh;
+            height: 100vh;
         }
 
         /* 侧边栏样式 */
@@ -29,9 +31,36 @@
             width: 240px;
             background: #001529;
             color: #fff;
-            position: fixed;
             height: 100vh;
             overflow-y: auto;
+            flex-shrink: 0;
+        }
+
+        /* 主要内容区域 */
+        .main-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* 顶部导航栏 */
+        .header {
+            height: 64px;
+            background: #fff;
+            box-shadow: 0 1px 4px rgba(0,21,41,.08);
+            display: flex;
+            align-items: center;
+            justify-content: space-between; /* 两端对齐 */
+            padding: 0 24px;
+            flex-shrink: 0;
+        }
+
+        /* 内容区域容器 */
+        .content-container {
+            flex: 1;
+            overflow: auto;
+            padding: 24px;
         }
 
         .logo {
@@ -77,29 +106,6 @@
             text-align: center;
         }
 
-        /* 主要内容区域样式 */
-        .main-content {
-            flex: 1;
-            margin-left: 240px;
-            padding: 24px;
-        }
-
-        /* 顶部导航栏样式 */
-        .header {
-            background: #fff;
-            padding: 0 24px;
-            height: 64px;
-            position: fixed;
-            top: 0;
-            right: 0;
-            left: 240px;
-            z-index: 1000;
-            box-shadow: 0 1px 4px rgba(0,21,41,.08);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
         .header-left {
             display: flex;
             align-items: center;
@@ -143,17 +149,23 @@
         .user-info {
             display: flex;
             align-items: center;
+            gap: 8px;
             cursor: pointer;
-            padding: 0 8px;
+            padding: 0 12px;
             height: 64px;
+            transition: background-color 0.3s;
         }
 
         .user-info:hover {
             background: rgba(0,0,0,.025);
         }
 
-        .user-info i.fa-chevron-down {
-            margin-left: 8px;
+        .user-info span {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .user-info i {
             font-size: 12px;
             color: #999;
         }
@@ -168,6 +180,7 @@
             padding: 4px 0;
             min-width: 160px;
             display: none;
+            z-index: 1000;
         }
 
         .user-dropdown:hover .dropdown-menu {
@@ -178,6 +191,7 @@
             padding: 8px 16px;
             display: flex;
             align-items: center;
+            gap: 8px;
             color: #666;
             text-decoration: none;
             transition: all 0.3s;
@@ -187,12 +201,6 @@
         .dropdown-item:hover {
             background: #f5f5f5;
             color: #1890ff;
-        }
-
-        .dropdown-item i {
-            margin-right: 8px;
-            width: 16px;
-            text-align: center;
         }
 
         .dropdown-divider {
@@ -233,17 +241,11 @@
     @yield('styles')
 </head>
 <body>
-    <div class="layout">
-        <!-- 引入侧边栏 -->
+    <div class="app-container">
         @include('admin.partials.sidebar')
-
-        <!-- 主要内容区域 -->
-        <div class="main-content">
-            <!-- 引入顶部导航栏 -->
+        <div class="main-container">
             @include('admin.partials.header')
-
-            <!-- 页面内容 -->
-            <div class="page-content">
+            <div class="content-container">
                 @yield('content')
             </div>
         </div>
