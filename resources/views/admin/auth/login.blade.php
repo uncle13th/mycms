@@ -3,169 +3,143 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>管理员登录 - {{ config('app.name') }}</title>
-    <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <title>{{ config('app.name') }} - 管理员登录</title>
     <link href="https://cdn.bootcdn.net/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
         body {
-            height: 100vh;
-            background-color: #f8f9fa;
+            font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
+            background: #f0f2f5;
+            min-height: 100vh;
             display: flex;
             align-items: center;
-            padding-top: 40px;
-            padding-bottom: 40px;
+            justify-content: center;
         }
         .login-container {
-            width: 100%;
-            max-width: 420px;
-            margin: 0 auto;
-            padding: 15px;
-        }
-        .card {
-            border: none;
-            border-radius: 10px;
-            box-shadow: 0 0 35px rgba(0, 0, 0, 0.05);
             background: #fff;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+            width: 400px;
         }
-        .card-header {
-            background: none;
-            border-bottom: 1px solid #f1f1f1;
-            padding: 25px;
+        .login-header {
             text-align: center;
+            margin-bottom: 40px;
         }
-        .card-body {
-            padding: 30px;
-        }
-        .logo {
-            margin-bottom: 0.5rem;
-        }
-        .logo-text {
-            font-size: 1.75rem;
-            font-weight: 600;
-            color: #2d3748;
-            margin-bottom: 0.5rem;
-        }
-        .logo-description {
-            color: #718096;
-            font-size: 0.875rem;
+        .login-header h1 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 10px;
         }
         .form-group {
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
+            margin-bottom: 20px;
+            position: relative;
         }
-        .form-group label {
-            color: #2d3748;
-            font-weight: 500;
-            margin-bottom: 0;
-            width: 80px;
-            flex-shrink: 0;
+        .form-group i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #909399;
         }
         .form-control {
-            border: 2px solid #e2e8f0;
-            height: 42px;
-            font-size: 0.95rem;
-            border-radius: 6px;
-            padding: 0.5rem 1rem;
-            flex-grow: 1;
+            width: 100%;
+            height: 40px;
+            line-height: 40px;
+            padding: 0 15px 0 40px;
+            border: 1px solid #dcdfe6;
+            border-radius: 4px;
+            color: #606266;
+            transition: all 0.3s;
         }
         .form-control:focus {
-            border-color: #4299e1;
-            box-shadow: none;
+            border-color: #409eff;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(64, 158, 255, 0.2);
         }
-        .btn-primary {
-            background-color: #4299e1;
+        .btn-submit {
+            width: 100%;
+            height: 40px;
+            background: #409eff;
             border: none;
-            padding: 0.8rem;
-            font-weight: 500;
-            height: 42px;
-            transition: all 0.2s;
+            border-radius: 4px;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
         }
-        .btn-primary:hover {
-            background-color: #3182ce;
-            transform: translateY(-1px);
+        .btn-submit:hover {
+            background: #66b1ff;
+        }
+        .remember-me {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .remember-me input {
+            margin-right: 5px;
         }
         .alert {
-            border-radius: 8px;
-            font-size: 0.875rem;
-            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
         }
         .alert-danger {
-            background-color: #fff5f5;
-            color: #e53e3e;
-        }
-        .form-check-label {
-            color: #718096;
-            font-size: 0.875rem;
-        }
-        .form-check-input:checked {
-            background-color: #4299e1;
-            border-color: #4299e1;
-        }
-        .copyright {
-            text-align: center;
-            color: #718096;
-            margin-top: 2rem;
-            font-size: 0.875rem;
-        }
-        .form-check {
-            padding-left: 80px;
+            background-color: #fef0f0;
+            color: #f56c6c;
+            border: 1px solid #fde2e2;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="login-container">
-            <div class="card">
-                <div class="card-header">
-                    <div class="logo">
-                        <div class="logo-text">{{ config('app.name') }}</div>
-                        <div class="logo-description">欢迎回来! 请登录您的账号</div>
-                    </div>
-                </div>
-                <div class="card-body">
-                    @if ($errors->any())
-                        <div class="alert alert-danger mb-4">
-                            <ul class="mb-0 list-unstyled">
-                                @foreach ($errors->all() as $error)
-                                    <li><i class="fas fa-exclamation-circle me-2"></i>{{ $error }}</li>
-                                @endforeach
-                            </ul>
-                        </div>
-                    @endif
-
-                    <form method="POST" action="{{ route('admin.login') }}">
-                        @csrf
-                        <div class="form-group">
-                            <label for="username">用户名</label>
-                            <input type="text" class="form-control @error('username') is-invalid @enderror" 
-                                   id="username" name="username" value="{{ old('username') }}" required autofocus>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="password">密码</label>
-                            <input type="password" class="form-control @error('password') is-invalid @enderror" 
-                                   id="password" name="password" required>
-                        </div>
-
-                        <div class="form-check mb-4">
-                            <input class="form-check-input" type="checkbox" name="remember" 
-                                   id="remember" {{ old('remember') ? 'checked' : '' }}>
-                            <label class="form-check-label" for="remember">
-                                记住我的登录状态
-                            </label>
-                        </div>
-
-                        <button type="submit" class="btn btn-primary w-100">
-                            <i class="fas fa-sign-in-alt me-2"></i>登录
-                        </button>
-                    </form>
-                </div>
-            </div>
-            <div class="copyright">
-                &copy; {{ date('Y') }} {{ config('app.name') }}. All rights reserved.
-            </div>
+    <div class="login-container">
+        <div class="login-header">
+            <h1>{{ config('app.name') }}</h1>
         </div>
+        
+        @if($errors->any())
+            <div class="alert alert-danger">
+                {{ $errors->first() }}
+            </div>
+        @endif
+
+        <form method="POST" action="{{ route('admin.login') }}">
+            @csrf
+            <div class="form-group">
+                <i class="fas fa-user"></i>
+                <input type="text" 
+                       name="username" 
+                       class="form-control" 
+                       placeholder="用户名" 
+                       value="{{ old('username') }}" 
+                       required 
+                       autofocus>
+            </div>
+
+            <div class="form-group">
+                <i class="fas fa-lock"></i>
+                <input type="password" 
+                       name="password" 
+                       class="form-control" 
+                       placeholder="密码" 
+                       required>
+            </div>
+
+            <div class="remember-me">
+                <label>
+                    <input type="checkbox" name="remember" {{ old('remember') ? 'checked' : '' }}>
+                    记住我
+                </label>
+            </div>
+
+            <button type="submit" class="btn-submit">
+                登 录
+            </button>
+        </form>
     </div>
 </body>
 </html>

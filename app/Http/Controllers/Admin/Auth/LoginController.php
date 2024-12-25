@@ -5,13 +5,12 @@ namespace App\Http\Controllers\Admin\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
     use AuthenticatesUsers;
 
-    protected $redirectTo = '/';
+    protected $redirectTo = '/admin/dashboard';
 
     public function __construct()
     {
@@ -25,7 +24,7 @@ class LoginController extends Controller
 
     protected function guard()
     {
-        return Auth::guard('admin');
+        return auth()->guard('admin');
     }
 
     public function username()
@@ -33,9 +32,20 @@ class LoginController extends Controller
         return 'username';
     }
 
+    protected function validateLogin(Request $request)
+    {
+        $request->validate([
+            $this->username() => 'required|string',
+            'password' => 'required|string',
+        ], [
+            $this->username() . '.required' => '用户名不能为空',
+            'password.required' => '密码不能为空',
+        ]);
+    }
+
     protected function authenticated(Request $request, $user)
     {
-        return redirect()->intended(route('admin.dashboard'));
+        return redirect()->intended($this->redirectTo);
     }
 
     public function logout(Request $request)

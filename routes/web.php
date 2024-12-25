@@ -18,3 +18,7 @@ Route::group(['domain' => env('APP_URL')], function () {
         return view('welcome');
     });
 });
+
+Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['auth:admin']], function () {
+    Route::get('/dashboard', 'Admin\DashboardController@index')->name('dashboard');
+});
