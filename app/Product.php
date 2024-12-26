@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Product extends Model
 {
+    protected $table = 'products';  // 明确指定表名
+
     protected $fillable = [
         'name',
         'category_id',
@@ -25,4 +27,4 @@ class Product extends Model
     {
         return $this->belongsTo(Category::class);
     }
-} 
+}

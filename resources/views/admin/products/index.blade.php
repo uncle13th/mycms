@@ -11,7 +11,7 @@
 @section('content')
 <div class="page-header">
     <div class="search-wrapper">
-        <form action="{{ route('admin.products.index') }}" method="GET" class="search-form">
+        <form action="{{ route('admin.products.index') }}" method="GET" class="search-form" id="searchForm">
             <div class="search-row">
                 <div class="search-group">
                     <label>产品名称</label>
@@ -26,11 +26,11 @@
                 </div>
                 <div class="search-group">
                     <label>产品分类</label>
-                    <select name="category_id" class="form-control">
+                    <select name="category_id" class="form-control" onchange="this.form.submit()">
                         <option value="">请选择分类</option>
                         @foreach($categories as $category)
                             <option value="{{ $category->id }}" 
-                                    {{ request('category_id') == $category->id ? 'selected' : '' }}>
+                                    {{ (string)request('category_id') === (string)$category->id ? 'selected' : '' }}>
                                 {{ $category->name }}
                             </option>
                         @endforeach
@@ -38,7 +38,7 @@
                 </div>
                 <div class="search-group">
                     <label>语言</label>
-                    <select name="language" class="form-control">
+                    <select name="language" class="form-control" onchange="this.form.submit()">
                         <option value="">请选择语言</option>
                         <option value="zh_CN" {{ request('language') === 'zh_CN' ? 'selected' : '' }}>简体中文</option>
                         <option value="zh_TW" {{ request('language') === 'zh_TW' ? 'selected' : '' }}>繁体中文</option>
@@ -47,10 +47,10 @@
                 </div>
                 <div class="search-group">
                     <label>产品状态</label>
-                    <select name="status" class="form-control">
+                    <select name="status" class="form-control" onchange="this.form.submit()">
                         <option value="">请选择状态</option>
-                        <option value="1" {{ request('status') === '1' ? 'selected' : '' }}>上架</option>
-                        <option value="0" {{ request('status') === '0' ? 'selected' : '' }}>下架</option>
+                        <option value="1" {{ (string)request('status') === '1' ? 'selected' : '' }}>上架</option>
+                        <option value="0" {{ (string)request('status') === '0' ? 'selected' : '' }}>下架</option>
                     </select>
                 </div>
                 <div class="search-buttons">
@@ -89,9 +89,13 @@
                 <tr>
                     <td>{{ $product->id }}</td>
                     <td>
-                        <img src="{{ $product->image_url }}" 
-                             alt="{{ $product->name }}" 
-                             class="product-thumb">
+                        @if($product->image_url)
+                            <img src="{{ asset($product->image_url) }}" 
+                                 alt="{{ $product->name }}" 
+                                 class="product-thumb">
+                        @else
+                            <span class="no-image">无图片</span>
+                        @endif
                     </td>
                     <td>
                         <div class="product-name">{{ $product->name }}</div>
@@ -99,7 +103,7 @@
                             <div class="product-desc">{{ Str::limit($product->description, 50) }}</div>
                         @endif
                     </td>
-                    <td>{{ $product->category->name }}</td>
+                    <td>{{ optional($product->category)->name ?? '无分类' }}</td>
                     <td>
                         @switch($product->language)
                             @case('zh_CN')
@@ -116,13 +120,11 @@
                         @endswitch
                     </td>
                     <td>
-                        @if($product->status)
-                            <span class="badge badge-success">上架</span>
-                        @else
-                            <span class="badge badge-secondary">下架</span>
-                        @endif
+                        <span class="badge {{ $product->status ? 'badge-success' : 'badge-secondary' }}">
+                            {{ $product->status ? '上架' : '下架' }}
+                        </span>
                     </td>
-                    <td>{{ $product->created_at }}</td>
+                    <td>{{ $product->created_at->format('Y-m-d H:i:s') }}</td>
                     <td>
                         <div class="action-buttons">
                             <a href="{{ route('admin.products.edit', $product->id) }}" 
@@ -131,8 +133,14 @@
                                 <i class="fas fa-edit"></i>
                             </a>
                             <button type="button" 
+                                   class="btn-action btn-status {{ $product->status ? 'status-on' : 'status-off' }}"
+                                   onclick="toggleStatus({{ $product->id }}, {{ $product->status ? 'true' : 'false' }})"
+                                   title="{{ $product->status ? '点击下架' : '点击上架' }}">
+                                <i class="fas {{ $product->status ? 'fa-toggle-on' : 'fa-toggle-off' }}"></i>
+                            </button>
+                            <button type="button" 
                                     class="btn-action btn-delete" 
-                                    onclick="deleteProduct({{ $product->id }})"
+                                    onclick="confirmDelete({{ $product->id }}, '{{ $product->name }}')"
                                     title="删除">
                                 <i class="fas fa-trash"></i>
                             </button>
@@ -153,18 +161,14 @@
 
     @if($products->hasPages())
     <div class="pagination-wrapper">
-        <div class="pagination-content">
-            <div class="pagination-info">
-                显示第 {{ $products->firstItem() }} 到 {{ $products->lastItem() }} 条，共 {{ $products->total() }} 条
-            </div>
-            {{ $products->appends(request()->except('page'))->links() }}
-        </div>
+        {{ $products->links() }}
     </div>
     @endif
 </div>
 @endsection
 
 @section('styles')
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
 <style>
 /* 搜索区域样式 */
 .search-wrapper {
@@ -403,12 +407,12 @@ select.form-control {
     width: 32px;
     height: 32px;
     border-radius: 4px;
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
+    border: none;
     cursor: pointer;
     transition: all 0.3s;
-    border: none;
     color: #fff;
 }
 
@@ -416,18 +420,32 @@ select.form-control {
     background: #409eff;
 }
 
+.btn-edit:hover {
+    background: #66b1ff;
+}
+
 .btn-delete {
     background: #f56c6c;
 }
 
-.btn-edit:hover {
-    background: #66b1ff;
-    transform: translateY(-1px);
-}
-
 .btn-delete:hover {
     background: #f78989;
-    transform: translateY(-1px);
+}
+
+.btn-status {
+    background: #909399;
+}
+
+.status-on {
+    background: #67c23a;
+}
+
+.status-off {
+    background: #909399;
+}
+
+.btn-status:hover {
+    opacity: 0.8;
 }
 
 /* 空数据样式 */
@@ -564,28 +582,57 @@ select.form-control {
 @endsection
 
 @section('scripts')
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 <script>
+$(document).ready(function() {
+    // 设置 toastr 配置
+    toastr.options = {
+        closeButton: true,
+        progressBar: true,
+        positionClass: "toast-top-right",
+        timeOut: 3000
+    };
+
+    // 设置 CSRF token
+    axios.defaults.headers.common['X-CSRF-TOKEN'] = $('meta[name="csrf-token"]').attr('content');
+});
+
+function confirmDelete(id, name) {
+    if (confirm(`确定要删除产品"${name}"吗？此操作不可恢复！`)) {
+        deleteProduct(id);
+    }
+}
+
 function deleteProduct(id) {
-    if (confirm('确定要删除这个产品吗？此操作不可恢复！')) {
-        fetch(`{{ url('admin/products') }}/${id}`, {
-            method: 'DELETE',
-            headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                'Accept': 'application/json'
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                window.location.reload();
+    axios.delete(`{{ url('admin/products') }}/${id}`)
+        .then(response => {
+            if (response.data.success) {
+                toastr.success('删除成功');
+                setTimeout(() => window.location.reload(), 1000);
             } else {
-                alert('删除失败：' + data.message);
+                toastr.error(response.data.message || '删除失败');
             }
         })
         .catch(error => {
-            alert('操作失败，请重试');
+            toastr.error(error.response?.data?.message || '操作失败');
         });
-    }
+}
+
+function toggleStatus(id, currentStatus) {
+    axios.patch(`{{ url('admin/products') }}/${id}/toggle-status`)
+        .then(response => {
+            if (response.data.success) {
+                toastr.success(currentStatus ? '已下架' : '已上架');
+                setTimeout(() => window.location.reload(), 1000);
+            } else {
+                toastr.error(response.data.message || '操作失败');
+            }
+        })
+        .catch(error => {
+            toastr.error(error.response?.data?.message || '操作失败');
+        });
 }
 </script>
-@endsection 
+@endsection
