@@ -175,7 +175,7 @@ class ProductController extends Controller
     {
         try {
             if ($request->hasFile('file')) {
-                $path = $request->file('file')->store('products/content', 'public');
+                $path = $request->file('file')->store('products', 'public');
                 return response()->json([
                     'location' => asset('storage/' . $path)
                 ]);
@@ -187,6 +187,31 @@ class ProductController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'error' => '上传失败：' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function uploadEditorImage(Request $request)
+    {
+        try {
+            if ($request->hasFile('upload')) {
+                $path = $request->file('upload')->store('products', 'public');
+                
+                return response()->json([
+                    'uploaded' => true,
+                    'url' => asset('storage/' . $path)
+                ]);
+            }
+            
+            return response()->json([
+                'uploaded' => false,
+                'error' => ['message' => '没有上传文件']
+            ], 400);
+            
+        } catch (\Exception $e) {
+            return response()->json([
+                'uploaded' => false,
+                'error' => ['message' => '上传失败：' . $e->getMessage()]
             ], 500);
         }
     }

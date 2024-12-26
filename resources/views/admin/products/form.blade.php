@@ -419,40 +419,47 @@ textarea.form-control {
 }
 
 /* 编辑器样式调整 */
-.ck-editor__editable {
-    min-height: 400px;
-    max-height: 600px;
+.editor-toolbar {
+    margin-bottom: 10px;
+    border: 1px solid #dcdfe6;
+    border-radius: 4px;
+    padding: 5px;
 }
 
-.ck-content {
-    font-size: 14px;
+.ck-toolbar {
+    border: none !important;
+}
+
+#editor {
+    border: 1px solid #dcdfe6;
+    border-radius: 4px;
+    min-height: 400px;
+    padding: 20px;
+}
+
+#editor:focus {
+    border-color: #409eff;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(64,158,255,.2);
 }
 </style>
 @endsection
 
 @section('scripts')
-<script src="https://cdn.ckeditor.com/ckeditor5/36.0.1/classic/ckeditor.js"></script>
+<!-- 修改为标准版本�� CKEditor -->
+<script src="https://cdn.ckeditor.com/ckeditor5/41.1.0/classic/ckeditor.js"></script>
 <script>
 ClassicEditor
     .create(document.querySelector('#editor'), {
         toolbar: {
             items: [
-                'heading',
-                '|',
-                'bold',
-                'italic',
-                'link',
-                'bulletedList',
-                'numberedList',
-                '|',
-                'outdent',
-                'indent',
-                '|',
-                'imageUpload',
-                'blockQuote',
-                'insertTable',
-                'undo',
-                'redo'
+                'heading', '|',
+                'bold', 'italic', 'strikethrough', 'underline', '|',
+                'bulletedList', 'numberedList', '|',
+                'outdent', 'indent', '|',
+                'undo', 'redo', '|',
+                'link', 'uploadImage', 'insertTable', '|',
+                'alignment'
             ]
         },
         language: 'zh-cn',
@@ -471,12 +478,7 @@ ClassicEditor
                 'mergeTableCells'
             ]
         },
-        simpleUpload: {
-            uploadUrl: '{{ route("admin.products.upload-image") }}',
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-            }
-        }
+        extraPlugins: [MyUploadAdapterPlugin]
     })
     .then(editor => {
         // 在表单提交前将编辑器内容同步到隐藏输入框
@@ -488,7 +490,7 @@ ClassicEditor
         });
     })
     .catch(error => {
-        console.error(error);
+        console.error('编辑器初始化失败:', error);
     });
 
 function previewImage(input) {
@@ -497,7 +499,7 @@ function previewImage(input) {
         
         reader.onload = function(e) {
             const preview = document.getElementById('imagePreview');
-            preview.innerHTML = `<img src="${e.target.result}" alt="预览图片">`;
+            preview.innerHTML = `<img src="${e.target.result}" alt="预览图">`;
         }
         
         reader.readAsDataURL(input.files[0]);
@@ -507,6 +509,46 @@ function previewImage(input) {
 function openImageLibrary() {
     // 图片库功能实现
     alert('图片库功能开发中...');
+}
+
+// 添加自定义上传适配器插件
+function MyUploadAdapterPlugin(editor) {
+    editor.plugins.get('FileRepository').createUploadAdapter = (loader) => {
+        return new MyUploadAdapter(loader);
+    };
+}
+
+// 自定义上传适配器类
+class MyUploadAdapter {
+    constructor(loader) {
+        this.loader = loader;
+    }
+
+    upload() {
+        return this.loader.file.then(file => {
+            const formData = new FormData();
+            formData.append('upload', file);
+
+            return fetch('{{ route("admin.products.upload-editor-image") }}', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                }
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.uploaded) {
+                    return { default: result.url };
+                }
+                throw new Error(result.error?.message || '上传失败');
+            });
+        });
+    }
+
+    abort() {
+        // 中止上传
+    }
 }
 </script>
 @endsection 
