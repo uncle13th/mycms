@@ -624,10 +624,10 @@ function deleteProduct(id) {
 }
 
 function toggleStatus(id, currentStatus) {
-    axios.patch(`{{ url('admin/products') }}/${id}/toggle-status`)
+    axios.patch(`/admin/products/${id}/toggle-status`)
         .then(response => {
             if (response.data.success) {
-                toastr.success(currentStatus ? '已下架' : '已上架');
+                toastr.success(response.data.message);
                 setTimeout(() => window.location.reload(), 1000);
             } else {
                 toastr.error(response.data.message || '操作失败');
@@ -635,6 +635,7 @@ function toggleStatus(id, currentStatus) {
         })
         .catch(error => {
             toastr.error(error.response?.data?.message || '操作失败');
+            console.error('Error:', error);
         });
 }
 </script>

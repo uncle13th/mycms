@@ -33,6 +33,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
         
         // 产品管理
         Route::resource('products', 'Admin\ProductController');
+        Route::patch('products/{product}/toggle-status', 'Admin\ProductController@toggleStatus')->name('products.toggle-status');
         
         // 分类管理
         Route::resource('categories', 'Admin\CategoryController');

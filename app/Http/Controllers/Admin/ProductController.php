@@ -130,10 +130,9 @@ class ProductController extends Controller
             ->with('success', '产品更新成功');
     }
 
-    public function toggleStatus($id)
+    public function toggleStatus(Product $product)
     {
         try {
-            $product = Product::findOrFail($id);
             $product->status = !$product->status;
             $product->save();
 
@@ -142,6 +141,11 @@ class ProductController extends Controller
                 'message' => $product->status ? '产品已上架' : '产品已下架'
             ]);
         } catch (\Exception $e) {
+            \Log::error('Toggle Product Status Error:', [
+                'product_id' => $product->id,
+                'error' => $e->getMessage()
+            ]);
+            
             return response()->json([
                 'success' => false,
                 'message' => '操作失败：' . $e->getMessage()
