@@ -44,7 +44,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label>所属分类</label>
+                            <label>产品分类</label>
                             <select name="category_id" class="form-control" required>
                                 <option value="">请选择分类</option>
                                 @foreach($categories as $category)
@@ -56,24 +56,24 @@
                             </select>
                         </div>
 
-                        <div class="form-group">
-                            <label>语言</label>
-                            <select name="language" class="form-control" required>
-                                <option value="">请选择语言</option>
-                                <option value="zh_CN" {{ old('language', $product->language ?? '') == 'zh_CN' ? 'selected' : '' }}>简体中文</option>
-                                <option value="zh_TW" {{ old('language', $product->language ?? '') == 'zh_TW' ? 'selected' : '' }}>繁体中文</option>
-                                <option value="en" {{ old('language', $product->language ?? '') == 'en' ? 'selected' : '' }}>英语</option>
-                            </select>
-                        </div>
+                        <div class="form-inline-group">
+                            <div class="form-group-half">
+                                <label>语言</label>
+                                <select name="language" class="form-control" required>
+                                    <option value="">请选择语言</option>
+                                    <option value="zh_CN" {{ old('language', $product->language ?? '') == 'zh_CN' ? 'selected' : '' }}>简体中文</option>
+                                    <option value="zh_TW" {{ old('language', $product->language ?? '') == 'zh_TW' ? 'selected' : '' }}>繁体中文</option>
+                                    <option value="en" {{ old('language', $product->language ?? '') == 'en' ? 'selected' : '' }}>英语</option>
+                                </select>
+                            </div>
 
-                        <div class="form-group">
-                            <label class="checkbox-label">
-                                <input type="checkbox" 
-                                       name="status" 
-                                       value="1" 
-                                       {{ old('status', $product->status ?? 1) ? 'checked' : '' }}>
-                                <span>上架</span>
-                            </label>
+                            <div class="form-group-half">
+                                <label>产品状态</label>
+                                <select name="status" class="form-control" required>
+                                    <option value="0" {{ old('status', $product->status ?? 0) == 0 ? 'selected' : '' }}>下架</option>
+                                    <option value="1" {{ old('status', $product->status ?? 0) == 1 ? 'selected' : '' }}>上架</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
 
@@ -395,6 +395,29 @@ textarea.form-control {
     min-height: 120px;
     resize: vertical;
 }
+
+/* 行内表单组样式 */
+.form-inline-group {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 24px;
+}
+
+.form-group-half {
+    flex: 1;
+}
+
+.form-group-half label {
+    display: block;
+    margin-bottom: 8px;
+    color: #606266;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.form-group-half .form-control {
+    width: 100%;
+}
 </style>
 @endsection
 
@@ -414,7 +437,7 @@ function previewImage(input) {
 }
 
 function openImageLibrary() {
-    // 图片库功能待实现
+    // 图片库功能实现
     alert('图片库功能开发中...');
 }
 </script>
