@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Product;
 use App\Category;
+use Intervention\Image\Facades\Image;
 
 class ProductController extends Controller
 {
@@ -90,7 +91,23 @@ class ProductController extends Controller
         ];
 
         if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('products', 'public');
+            // 处理封面图片
+            $image = $request->file('image');
+            $img = Image::make($image);
+            
+            // 设置最大宽度为 800px
+            if ($img->width() > 800) {
+                $img->resize(800, null, function ($constraint) {
+                    $constraint->aspectRatio();
+                    $constraint->upsize();
+                });
+            }
+            
+            // 生成文件名并保存
+            $filename = uniqid('product_') . '.jpg';
+            $path = 'products/' . $filename;
+            $img->save(storage_path('app/public/' . $path), 80, 'jpg');
+            
             $data['image_url'] = asset('storage/' . $path);
         }
 
@@ -119,7 +136,23 @@ class ProductController extends Controller
         ];
 
         if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('products', 'public');
+            // 处理封面图片
+            $image = $request->file('image');
+            $img = Image::make($image);
+            
+            // 设置最大宽度为 800px
+            if ($img->width() > 800) {
+                $img->resize(800, null, function ($constraint) {
+                    $constraint->aspectRatio();
+                    $constraint->upsize();
+                });
+            }
+            
+            // 生成文件名并保存
+            $filename = uniqid('product_') . '.jpg';
+            $path = 'products/' . $filename;
+            $img->save(storage_path('app/public/' . $path), 80, 'jpg');
+            
             $data['image_url'] = asset('storage/' . $path);
         }
 
@@ -161,7 +194,7 @@ class ProductController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => '产品删���成功'
+                'message' => '产品删除成功'
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -175,7 +208,22 @@ class ProductController extends Controller
     {
         try {
             if ($request->hasFile('file')) {
-                $path = $request->file('file')->store('products', 'public');
+                $image = $request->file('file');
+                $img = Image::make($image);
+                
+                // 设置最大宽度为 800px
+                if ($img->width() > 800) {
+                    $img->resize(800, null, function ($constraint) {
+                        $constraint->aspectRatio();
+                        $constraint->upsize();
+                    });
+                }
+                
+                // 生成文件名并保存
+                $filename = uniqid('product_') . '.jpg';
+                $path = 'products/' . $filename;
+                $img->save(storage_path('app/public/' . $path), 80, 'jpg');
+                
                 return response()->json([
                     'location' => asset('storage/' . $path)
                 ]);
@@ -185,6 +233,11 @@ class ProductController extends Controller
                 'error' => '没有上传文件'
             ], 400);
         } catch (\Exception $e) {
+            \Log::error('Image Upload Error:', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
             return response()->json([
                 'error' => '上传失败：' . $e->getMessage()
             ], 500);
@@ -195,7 +248,36 @@ class ProductController extends Controller
     {
         try {
             if ($request->hasFile('upload')) {
-                $path = $request->file('upload')->store('products', 'public');
+                $image = $request->file('upload');
+                
+                // 创建图片实例
+                $img = Image::make($image);
+                
+                // 获取原始尺寸
+                $originalWidth = $img->width();
+                $originalHeight = $img->height();
+                
+                // 设置最大宽度
+                $maxWidth = 800;
+                
+                // 如果图片宽度大于最大宽度，进行等比缩放
+                if ($originalWidth > $maxWidth) {
+                    // 计算等比例的新高度
+                    $newHeight = intval($maxWidth * $originalHeight / $originalWidth);
+                    
+                    // 调整图片大小
+                    $img->resize($maxWidth, $newHeight, function ($constraint) {
+                        $constraint->aspectRatio();  // 保持纵横比
+                        $constraint->upsize();       // 防止小图被放大
+                    });
+                }
+                
+                // 生成文件名
+                $filename = uniqid('product_') . '.jpg';
+                $path = 'products/' . $filename;
+                
+                // 保存图片（使用 80% 质量的 JPG 格式）
+                $img->save(storage_path('app/public/' . $path), 80, 'jpg');
                 
                 return response()->json([
                     'uploaded' => true,
@@ -209,6 +291,11 @@ class ProductController extends Controller
             ], 400);
             
         } catch (\Exception $e) {
+            \Log::error('Image Upload Error:', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
             return response()->json([
                 'uploaded' => false,
                 'error' => ['message' => '上传失败：' . $e->getMessage()]
