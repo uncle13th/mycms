@@ -161,12 +161,32 @@ class ProductController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => '产品删除成功'
+                'message' => '产品删���成功'
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => '删除失败：' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function uploadImage(Request $request)
+    {
+        try {
+            if ($request->hasFile('file')) {
+                $path = $request->file('file')->store('products/content', 'public');
+                return response()->json([
+                    'location' => asset('storage/' . $path)
+                ]);
+            }
+            
+            return response()->json([
+                'error' => '没有上传文件'
+            ], 400);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => '上传失败：' . $e->getMessage()
             ], 500);
         }
     }

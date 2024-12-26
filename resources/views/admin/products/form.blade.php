@@ -121,9 +121,8 @@
             <div class="form-section">
                 <h3 class="section-title">产品内容</h3>
                 <div class="form-group">
-                    <textarea name="content" 
-                              class="form-control" 
-                              rows="8">{{ old('content', $product->content ?? '') }}</textarea>
+                    <div id="editor">{!! old('content', $product->content ?? '') !!}</div>
+                    <input type="hidden" name="content" id="content">
                 </div>
             </div>
 
@@ -418,11 +417,80 @@ textarea.form-control {
 .form-group-half .form-control {
     width: 100%;
 }
+
+/* 编辑器样式调整 */
+.ck-editor__editable {
+    min-height: 400px;
+    max-height: 600px;
+}
+
+.ck-content {
+    font-size: 14px;
+}
 </style>
 @endsection
 
 @section('scripts')
+<script src="https://cdn.ckeditor.com/ckeditor5/36.0.1/classic/ckeditor.js"></script>
 <script>
+ClassicEditor
+    .create(document.querySelector('#editor'), {
+        toolbar: {
+            items: [
+                'heading',
+                '|',
+                'bold',
+                'italic',
+                'link',
+                'bulletedList',
+                'numberedList',
+                '|',
+                'outdent',
+                'indent',
+                '|',
+                'imageUpload',
+                'blockQuote',
+                'insertTable',
+                'undo',
+                'redo'
+            ]
+        },
+        language: 'zh-cn',
+        image: {
+            toolbar: [
+                'imageTextAlternative',
+                'imageStyle:inline',
+                'imageStyle:block',
+                'imageStyle:side'
+            ]
+        },
+        table: {
+            contentToolbar: [
+                'tableColumn',
+                'tableRow',
+                'mergeTableCells'
+            ]
+        },
+        simpleUpload: {
+            uploadUrl: '{{ route("admin.products.upload-image") }}',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            }
+        }
+    })
+    .then(editor => {
+        // 在表单提交前将编辑器内容同步到隐藏输入框
+        const form = editor.sourceElement.closest('form');
+        const contentInput = document.querySelector('#content');
+        
+        form.addEventListener('submit', function() {
+            contentInput.value = editor.getData();
+        });
+    })
+    .catch(error => {
+        console.error(error);
+    });
+
 function previewImage(input) {
     if (input.files && input.files[0]) {
         const reader = new FileReader();

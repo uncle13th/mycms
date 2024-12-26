@@ -34,6 +34,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
         // 产品管理
         Route::resource('products', 'Admin\ProductController');
         Route::patch('products/{product}/toggle-status', 'Admin\ProductController@toggleStatus')->name('products.toggle-status');
+        Route::post('products/upload-image', 'Admin\ProductController@uploadImage')->name('products.upload-image');
         
         // 分类管理
         Route::resource('categories', 'Admin\CategoryController');
