@@ -159,11 +159,14 @@
         </table>
     </div>
 
-    @if($products->hasPages())
     <div class="pagination-wrapper">
-        {{ $products->links() }}
+        <div class="pagination-content">
+            <div class="pagination-info">
+                显示第 {{ $products->firstItem() ?? 1 }} 到 {{ $products->lastItem() ?? $products->total() }} 条，共 {{ $products->total() }} 条
+            </div>
+            {{ $products->links() }}
+        </div>
     </div>
-    @endif
 </div>
 @endsection
 
@@ -468,7 +471,6 @@ select.form-control {
 
 /* 分页样式 */
 .pagination-wrapper {
-    margin-top: auto;
     padding: 20px;
     background: #fff;
     border-top: 1px solid #ebeef5;
@@ -482,36 +484,38 @@ select.form-control {
 }
 
 .pagination-info {
-    color: #909399;
-    font-size: 13px;
+    color: #606266;
+    font-size: 14px;
 }
 
 .pagination {
-    display: flex;
-    list-style: none;
-    padding: 0;
     margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 4px;
 }
 
 .pagination li {
-    margin: 0 4px;
+    display: inline-flex;
 }
 
-.pagination li span,
-.pagination li a {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 32px;
+.pagination li a,
+.pagination li span {
+    padding: 0 12px;
     height: 32px;
-    padding: 0 10px;
-    border-radius: 4px;
-    font-size: 13px;
+    line-height: 32px;
+    text-align: center;
+    font-size: 14px;
     color: #606266;
-    border: 1px solid #dcdfe6;
     background: #fff;
+    border: 1px solid #dcdfe6;
+    border-radius: 4px;
     text-decoration: none;
     transition: all 0.3s;
+    display: inline-block;
+    cursor: pointer;
 }
 
 .pagination li.active span {
@@ -523,7 +527,6 @@ select.form-control {
 .pagination li a:hover {
     color: #409eff;
     border-color: #c6e2ff;
-    background: #ecf5ff;
 }
 
 .pagination li.disabled span {
