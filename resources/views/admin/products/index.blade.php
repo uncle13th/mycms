@@ -120,9 +120,17 @@
                         @endswitch
                     </td>
                     <td>
-                        <span class="badge {{ $product->status ? 'badge-success' : 'badge-secondary' }}">
-                            {{ $product->status ? '上架' : '下架' }}
-                        </span>
+                        <div class="status-wrapper">
+                            <span class="badge {{ $product->status ? 'badge-success' : 'badge-secondary' }}">
+                                {{ $product->status ? '上架' : '下架' }}
+                            </span>
+                            <button type="button" 
+                                    class="btn-action btn-status {{ $product->status ? 'status-on' : 'status-off' }}"
+                                    onclick="toggleStatus({{ $product->id }}, {{ $product->status ? 'true' : 'false' }})"
+                                    title="{{ $product->status ? '点击下架' : '点击上架' }}">
+                                <i class="fas {{ $product->status ? 'fa-toggle-on' : 'fa-toggle-off' }}"></i>
+                            </button>
+                        </div>
                     </td>
                     <td>{{ $product->created_at->format('Y-m-d H:i:s') }}</td>
                     <td>
@@ -132,12 +140,6 @@
                                title="编辑">
                                 <i class="fas fa-edit"></i>
                             </a>
-                            <button type="button" 
-                                   class="btn-action btn-status {{ $product->status ? 'status-on' : 'status-off' }}"
-                                   onclick="toggleStatus({{ $product->id }}, {{ $product->status ? 'true' : 'false' }})"
-                                   title="{{ $product->status ? '点击下架' : '点击上架' }}">
-                                <i class="fas {{ $product->status ? 'fa-toggle-on' : 'fa-toggle-off' }}"></i>
-                            </button>
                             <button type="button" 
                                     class="btn-action btn-delete" 
                                     onclick="confirmDelete({{ $product->id }}, '{{ $product->name }}')"
@@ -281,7 +283,7 @@ select.form-control {
     text-decoration: none;
 }
 
-/* 搜索按钮 */
+/* 搜索��钮 */
 .btn-info {
     background: linear-gradient(135deg, #409eff, #3a8ee6);
     color: #fff;
@@ -580,6 +582,38 @@ select.form-control {
 .content-container::-webkit-scrollbar-track,
 .table-responsive::-webkit-scrollbar-track {
     background: #f5f7fa;
+}
+
+/* 状态列样式 */
+.status-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-status {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    color: #909399;
+    transition: all 0.3s;
+}
+
+.btn-status.status-on {
+    color: #67c23a;
+}
+
+.btn-status.status-off {
+    color: #909399;
+}
+
+.btn-status:hover {
+    opacity: 0.8;
+    transform: scale(1.1);
 }
 </style>
 @endsection
